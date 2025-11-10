@@ -3,3 +3,5 @@ uvicorn[standard]==0.30.6
 pydantic-settings==2.5.2
 sqlmodel==0.0.22
 pymysql==1.1.0
+python-jose[cryptography]
+passlib[bcrypt]
