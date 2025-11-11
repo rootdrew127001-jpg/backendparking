@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from fastapi import HTTPException, status
 from sqlmodel import Session
 from app.models.ticket import Ticket
@@ -41,3 +42,20 @@ class TicketService:
 
     def list_tickets(self):
         return self.repo.list_all()
+    
+
+    def list_tickets(
+        self,
+        skip: int = 0,
+        limit: int = 10,
+        plate_no: Optional[str] = None,
+        status: Optional[str] = None
+    ):
+        items = self.repo.list_tickets(skip, limit, plate_no, status)
+        total = self.repo.count_tickets(plate_no, status)
+        return {
+            "total": total,
+            "page": (skip // limit) + 1,
+            "size": limit,
+            "items": items
+        }

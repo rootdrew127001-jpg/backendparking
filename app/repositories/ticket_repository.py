@@ -6,28 +6,27 @@ class TicketRepository:
     def __init__(self, session: Session):
         self.session = session
 
-    def create(self, ticket: Ticket) -> Ticket:
-        self.session.add(ticket)
-        self.session.commit()
-        self.session.refresh(ticket)
-        return ticket
+    def list_tickets(
+        self,
+        skip: int = 0,
+        limit: int = 10,
+        plate_no: Optional[str] = None,
+        status: Optional[str] = None
+    ) -> List[Ticket]:
+        query = select(Ticket)
 
-    def get(self, ticket_id: int) -> Optional[Ticket]:
-        return self.session.get(Ticket, ticket_id)
+        if plate_no:
+            query = query.where(Ticket.plate_no.contains(plate_no))
+        if status:
+            query = query.where(Ticket.status == status)
 
-    def list_all(self) -> List[Ticket]:
-        return self.session.exec(select(Ticket)).all()
+        result = self.session.exec(query.offset(skip).limit(limit))
+        return result.all()
 
-    def update(self, ticket: Ticket) -> Ticket:
-        self.session.add(ticket)
-        self.session.commit()
-        self.session.refresh(ticket)
-        return ticket
-
-    def delete(self, ticket_id: int) -> bool:
-        ticket = self.get(ticket_id)
-        if not ticket:
-            return False
-        self.session.delete(ticket)
-        self.session.commit()
-        return True
+    def count_tickets(self, plate_no: Optional[str] = None, status: Optional[str] = None) -> int:
+        query = select(Ticket)
+        if plate_no:
+            query = query.where(Ticket.plate_no.contains(plate_no))
+        if status:
+            query = query.where(Ticket.status == status)
+        return len(self.session.exec(query).all())

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
-from typing import List
+from typing import List, Optional
 from app.db.session import get_session
 from app.models.user import User
 from app.services.ticket_service import TicketService
@@ -37,10 +37,14 @@ def pay_ticket(
     service = TicketService(db)
     return service.pay_ticket(ticket_id)
 
-@router.get("/", response_model=List[Ticket])
+@router.get("/")
 def list_tickets(
+    skip: int = 0,
+    limit: int = 10,
+    plate_no: Optional[str] = None,
+    status: Optional[str] = None,
     db: Session = Depends(get_session),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     service = TicketService(db)
-    return service.list_tickets()
+    return service.list_tickets(skip, limit, plate_no, status)
