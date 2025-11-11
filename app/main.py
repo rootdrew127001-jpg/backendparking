@@ -6,6 +6,7 @@ from app.models.ticket import Ticket
 from app.models.user import User
 from app.db.session import init_db, Session, engine
 from app.services.user_service import UserService
+from app.api.v1.users import router as users_router
 
 def create_app() -> FastAPI:
     app = FastAPI(title=settings.APP_NAME, debug=settings.DEBUG)
@@ -30,6 +31,7 @@ def create_app() -> FastAPI:
 
     app.include_router(health_router, prefix="/api/v1")
     app.include_router(tickets_router, prefix="/api/v1")
+    app.include_router(users_router, prefix="/api/v1")
     return app
 
 app = create_app()
