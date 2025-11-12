@@ -6,10 +6,11 @@ from app.models.user import User
 from app.services.ticket_service import TicketService
 from app.models.ticket import Ticket
 from app.api.v1.users import get_current_user
+from app.schemas.ticket_schema import TicketCreate, TicketRead
 
 router = APIRouter(prefix="/tickets", tags=["tickets"])
 
-@router.post("/", response_model=Ticket)
+@router.post("/", response_model=TicketRead)
 def create_ticket(
     plate_no: str,
     vehicle_type: str,
@@ -19,7 +20,7 @@ def create_ticket(
     service = TicketService(db)
     return service.create_ticket(plate_no, vehicle_type)
 
-@router.post("/{ticket_id}/exit", response_model=Ticket)
+@router.post("/{ticket_id}/exit", response_model=TicketCreate)
 def exit_ticket(
     ticket_id: int, 
     db: Session = Depends(get_session),
@@ -28,7 +29,7 @@ def exit_ticket(
     service = TicketService(db)
     return service.exit_ticket(ticket_id)
 
-@router.post("/{ticket_id}/pay", response_model=Ticket)
+@router.post("/{ticket_id}/pay", response_model=TicketCreate)
 def pay_ticket(
     ticket_id: int, db: 
     Session = Depends(get_session),
